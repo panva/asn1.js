@@ -1,58 +1,66 @@
 # ASN1.js
 
-ASN.1 DER Encoder/Decoder and DSL.
+ASN.1 DER Encoder/Decoder and DSL for Node.js with no dependencies
+
+## Acknowledgement
+
+This is a fork of [@indutny's](https://github.com/indutny) `asn.js` library with the following
+changes made:
+
+- all `.int()` returns are native `BigInt` values
+- lint using [`standard`](https://github.com/standard/standard)
 
 ## Example
 
 Define model:
 
-```javascript
-var asn = require('asn1.js');
+```js
+const asn = require('@panva/asn1.js')
 
-var Human = asn.define('Human', function() {
+const Human = asn.define('Human', function () {
   this.seq().obj(
     this.key('firstName').octstr(),
     this.key('lastName').octstr(),
     this.key('age').int(),
     this.key('gender').enum({ 0: 'male', 1: 'female' }),
     this.key('bio').seqof(Bio)
-  );
-});
+  )
+})
 
-var Bio = asn.define('Bio', function() {
+const Bio = asn.define('Bio', function () {
   this.seq().obj(
     this.key('time').gentime(),
     this.key('description').octstr()
-  );
-});
+  )
+})
 ```
 
 Encode data:
 
-```javascript
-var output = Human.encode({
+```js
+const output = Human.encode({
   firstName: 'Thomas',
   lastName: 'Anderson',
   age: 28,
   gender: 'male',
   bio: [
     {
-      time: +new Date('31 March 1999'),
+      time: new Date('31 March 1999').getTime(),
       description: 'freedom of mind'
     }
   ]
-}, 'der');
+}, 'der')
 ```
 
 Decode data:
 
-```javascript
-var human = Human.decode(output, 'der');
-console.log(human);
+```js
+const human = Human.decode(output, 'der')
+console.log(human)
 /*
 { firstName: <Buffer 54 68 6f 6d 61 73>,
   lastName: <Buffer 41 6e 64 65 72 73 6f 6e>,
-  age: 28,
+  age: 28n,
   gender: 'male',
   bio:
    [ { time: 922820400000,
@@ -65,36 +73,11 @@ console.log(human);
 Its possible to parse data without stopping on first error. In order to do it,
 you should call:
 
-```javascript
-var human = Human.decode(output, 'der', { partial: true });
-console.log(human);
+```js
+const human = Human.decode(output, 'der', { partial: true })
+console.log(human)
 /*
 { result: { ... },
   errors: [ ... ] }
 */
 ```
-
-#### LICENSE
-
-This software is licensed under the MIT License.
-
-Copyright Fedor Indutny, 2017.
-
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to permit
-persons to whom the Software is furnished to do so, subject to the
-following conditions:
-
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-USE OR OTHER DEALINGS IN THE SOFTWARE.

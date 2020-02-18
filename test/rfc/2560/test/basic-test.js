@@ -1,13 +1,10 @@
-'use strict';
 /* global describe it */
 
-const assert = require('assert');
-const rfc2560 = require('..');
+const { strict: assert } = require('assert')
+const rfc2560 = require('..')
 
-const Buffer = require('safer-buffer').Buffer;
-
-describe('asn1.js RFC2560', function() {
-  it('should decode OCSP response', function() {
+describe('asn1.js RFC2560', function () {
+  it('should decode OCSP response', function () {
     const data = Buffer.from(
       '308201d40a0100a08201cd308201c906092b0601050507300101048201ba308201b630' +
       '819fa216041499e4405f6b145e3e05d9ddd36354fc62b8f700ac180f32303133313133' +
@@ -23,41 +20,41 @@ describe('asn1.js RFC2560', function() {
       '4bbb4535cff46f6b341e50f26a242dd78e246c8dea0e2fabcac9582e000c138766f536' +
       'd7f7bab81247c294454e62b710b07126de4e09685818f694df5783eb66f384ce5977f1' +
       '2721ff38c709f3ec580d22ff40818dd17f',
-      'hex');
+      'hex')
 
-    const res = rfc2560.OCSPResponse.decode(data, 'der');
-    assert.equal(res.responseStatus, 'successful');
-    assert.equal(res.responseBytes.responseType, 'id-pkix-ocsp-basic');
+    const res = rfc2560.OCSPResponse.decode(data, 'der')
+    assert.equal(res.responseStatus, 'successful')
+    assert.equal(res.responseBytes.responseType, 'id-pkix-ocsp-basic')
 
     const basic = rfc2560.BasicOCSPResponse.decode(
       res.responseBytes.response,
       'der'
-    );
-    assert.equal(basic.tbsResponseData.version, 'v1');
-    assert.equal(basic.tbsResponseData.producedAt, 1385797510000);
-  });
+    )
+    assert.equal(basic.tbsResponseData.version, 'v1')
+    assert.equal(basic.tbsResponseData.producedAt, 1385797510000)
+  })
 
-  it('should encode/decode OCSP response', function() {
+  it('should encode/decode OCSP response', function () {
     const encoded = rfc2560.OCSPResponse.encode({
       responseStatus: 'malformed_request',
       responseBytes: {
         responseType: 'id-pkix-ocsp-basic',
         response: 'random-string'
       }
-    }, 'der');
-    const decoded = rfc2560.OCSPResponse.decode(encoded, 'der');
-    assert.equal(decoded.responseStatus, 'malformed_request');
-    assert.equal(decoded.responseBytes.responseType, 'id-pkix-ocsp-basic');
-    assert.equal(decoded.responseBytes.response.toString(), 'random-string');
-  });
+    }, 'der')
+    const decoded = rfc2560.OCSPResponse.decode(encoded, 'der')
+    assert.equal(decoded.responseStatus, 'malformed_request')
+    assert.equal(decoded.responseBytes.responseType, 'id-pkix-ocsp-basic')
+    assert.equal(decoded.responseBytes.response.toString(), 'random-string')
+  })
 
-  it('should encode OCSP request', function() {
+  it('should encode OCSP request', function () {
     const tbsReq = {
       version: 'v1',
       requestList: [
         {
           reqCert: {
-            hashAlgorithm: { algorithm: [ 1, 3, 14, 3, 2, 26 ] },
+            hashAlgorithm: { algorithm: [1, 3, 14, 3, 2, 26] },
             issuerNameHash: Buffer.from('01', 'hex'),
             issuerKeyHash: Buffer.from('02', 'hex'),
             serialNumber: 0x2b
@@ -66,17 +63,17 @@ describe('asn1.js RFC2560', function() {
       ],
       requestExtensions: [
         {
-          extnID: [ 1, 3, 6, 1, 5, 5, 7, 48, 1, 2 ],
+          extnID: [1, 3, 6, 1, 5, 5, 7, 48, 1, 2],
           critical: false,
           extnValue: Buffer.from('03', 'hex')
         }
       ]
-    };
+    }
 
     const res = {
       tbsRequest: tbsReq
-    };
+    }
 
-    rfc2560.OCSPRequest.encode(res, 'der');
-  });
-});
+    rfc2560.OCSPRequest.encode(res, 'der')
+  })
+})

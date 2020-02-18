@@ -1,185 +1,181 @@
-'use strict';
 /* global describe it */
 
-const assert = require('assert');
-const asn1 = require('..');
-const fixtures = require('./fixtures');
-const jsonEqual = fixtures.jsonEqual;
+const asn1 = require('..')
+const fixtures = require('./fixtures')
+const jsonEqual = fixtures.jsonEqual
 
-const Buffer = require('safer-buffer').Buffer;
+describe('asn1.js ping/pong', function () {
+  function test (name, model, input, expected) {
+    it('should support ' + name, function () {
+      const M = asn1.define('TestModel', model)
 
-describe('asn1.js ping/pong', function() {
-  function test(name, model, input, expected) {
-    it('should support ' + name, function() {
-      const M = asn1.define('TestModel', model);
-
-      const encoded = M.encode(input, 'der');
-      const decoded = M.decode(encoded, 'der');
-      jsonEqual(decoded, expected !== undefined ? expected : input);
-    });
+      const encoded = M.encode(input, 'der')
+      const decoded = M.decode(encoded, 'der')
+      jsonEqual(decoded, expected !== undefined ? expected : input)
+    })
   }
 
-  describe('primitives', function() {
-    test('bigint', function() {
-      this.int();
-    }, new asn1.bignum('0102030405060708', 16));
+  describe('primitives', function () {
+    test('bigint', function () {
+      this.int()
+    }, 72623859790382856n)
 
-    test('enum', function() {
-      this.enum({ 0: 'hello', 1: 'world' });
-    }, 'world');
+    test('enum', function () {
+      this.enum({ 0: 'hello', 1: 'world' })
+    }, 'world')
 
-    test('octstr', function() {
-      this.octstr();
-    }, Buffer.from('hello'));
+    test('octstr', function () {
+      this.octstr()
+    }, Buffer.from('hello'))
 
-    test('objDesc', function() {
+    test('objDesc', function () {
       this.objDesc()
-    }, Buffer.from('hello'));
+    }, Buffer.from('hello'))
 
-    test('bitstr', function() {
-      this.bitstr();
-    }, { unused: 4, data: Buffer.from('hello!') });
+    test('bitstr', function () {
+      this.bitstr()
+    }, { unused: 4, data: Buffer.from('hello!') })
 
-    test('ia5str', function() {
-      this.ia5str();
-    }, 'hello');
+    test('ia5str', function () {
+      this.ia5str()
+    }, 'hello')
 
-    test('utf8str', function() {
-      this.utf8str();
-    }, 'hello');
+    test('utf8str', function () {
+      this.utf8str()
+    }, 'hello')
 
-    test('bmpstr', function() {
-      this.bmpstr();
-    }, 'hello');
+    test('bmpstr', function () {
+      this.bmpstr()
+    }, 'hello')
 
-    test('numstr', function() {
-      this.numstr();
-    }, '1234 5678 90');
+    test('numstr', function () {
+      this.numstr()
+    }, '1234 5678 90')
 
-    test('printstr', function() {
-      this.printstr();
-    }, 'hello');
+    test('printstr', function () {
+      this.printstr()
+    }, 'hello')
 
-    test('gentime', function() {
-      this.gentime();
-    }, 1385921175000);
+    test('gentime', function () {
+      this.gentime()
+    }, 1385921175000)
 
-    test('gentime 0', function() {
-      this.gentime();
-    }, 0, 0);
+    test('gentime 0', function () {
+      this.gentime()
+    }, 0, 0)
 
-    test('utctime', function() {
-      this.utctime();
-    }, 1385921175000);
+    test('utctime', function () {
+      this.utctime()
+    }, 1385921175000)
 
-    test('utctime 0', function() {
-      this.utctime();
-    }, 0, 0);
+    test('utctime 0', function () {
+      this.utctime()
+    }, 0, 0)
 
-    test('utctime regression', function() {
-      this.utctime();
-    }, 1414454400000);
+    test('utctime regression', function () {
+      this.utctime()
+    }, 1414454400000)
 
-    test('null', function() {
-      this.null_();
-    }, null);
+    test('null', function () {
+      this.null_()
+    }, null)
 
-    test('objid', function() {
+    test('objid', function () {
       this.objid({
         '1 3 6 1 5 5 7 48 1 1': 'id-pkix-ocsp-basic'
-      });
-    }, 'id-pkix-ocsp-basic');
+      })
+    }, 'id-pkix-ocsp-basic')
 
-    test('true', function() {
-      this.bool();
-    }, true);
+    test('true', function () {
+      this.bool()
+    }, true)
 
-    test('false', function() {
-      this.bool();
-    }, false);
+    test('false', function () {
+      this.bool()
+    }, false)
 
-    test('any', function() {
-      this.any();
+    test('any', function () {
+      this.any()
     }, Buffer.from('02210081347a0d3d674aeeb563061d94a3aea5f6a7' +
-                  'c6dc153ea90a42c1ca41929ac1b9', 'hex'));
+                  'c6dc153ea90a42c1ca41929ac1b9', 'hex'))
 
-    test('default explicit', function() {
+    test('default explicit', function () {
       this.seq().obj(
         this.key('version').def('v1').explicit(0).int({
           0: 'v1',
           1: 'v2'
         })
-      );
-    }, {}, {'version': 'v1'});
+      )
+    }, {}, { version: 'v1' })
 
-    test('implicit', function() {
+    test('implicit', function () {
       this.implicit(0).int({
         0: 'v1',
         1: 'v2'
-      });
-    }, 'v2', 'v2');
-  });
+      })
+    }, 'v2', 'v2')
+  })
 
-  describe('composite', function() {
-    test('2x int', function() {
+  describe('composite', function () {
+    test('2x int', function () {
       this.seq().obj(
         this.key('hello').int(),
         this.key('world').int()
-      );
-    }, { hello: 4, world: 2 });
+      )
+    }, { hello: 4n, world: 2n })
 
-    test('enum', function() {
+    test('enum', function () {
       this.seq().obj(
         this.key('hello').enum({ 0: 'world', 1: 'devs' })
-      );
-    }, { hello: 'devs' });
+      )
+    }, { hello: 'devs' })
 
-    test('optionals', function() {
+    test('optionals', function () {
       this.seq().obj(
         this.key('hello').enum({ 0: 'world', 1: 'devs' }),
         this.key('how').optional().def('are you').enum({
           0: 'are you',
           1: 'are we?!'
         })
-      );
-    }, { hello: 'devs', how: 'are we?!' });
+      )
+    }, { hello: 'devs', how: 'are we?!' })
 
-    test('optionals #2', function() {
+    test('optionals #2', function () {
       this.seq().obj(
         this.key('hello').enum({ 0: 'world', 1: 'devs' }),
         this.key('how').optional().def('are you').enum({
           0: 'are you',
           1: 'are we?!'
         })
-      );
-    }, { hello: 'devs' }, { hello: 'devs', how: 'are you' });
+      )
+    }, { hello: 'devs' }, { hello: 'devs', how: 'are you' })
 
-    test('optionals #3', function() {
+    test('optionals #3', function () {
       this.seq().obj(
         this.key('content').optional().int()
-      );
-    }, {}, {});
+      )
+    }, {}, {})
 
-    test('optional + any', function() {
+    test('optional + any', function () {
       this.seq().obj(
         this.key('content').optional().any()
-      );
-    }, { content: Buffer.from('0500', 'hex') });
+      )
+    }, { content: Buffer.from('0500', 'hex') })
 
-    test('seqof', function() {
-      const S = asn1.define('S', function() {
+    test('seqof', function () {
+      const S = asn1.define('S', function () {
         this.seq().obj(
           this.key('a').def('b').int({ 0: 'a', 1: 'b' }),
           this.key('c').def('d').int({ 2: 'c', 3: 'd' })
-        );
-      });
-      this.seqof(S);
-    }, [{}, { a: 'a', c: 'c' }], [{ a: 'b', c: 'd' }, { a: 'a', c: 'c' }]);
+        )
+      })
+      this.seqof(S)
+    }, [{}, { a: 'a', c: 'c' }], [{ a: 'b', c: 'd' }, { a: 'a', c: 'c' }])
 
-    test('choice', function() {
+    test('choice', function () {
       this.choice({
         apple: this.bool()
-      });
-    }, { type: 'apple', value: true });
-  });
-});
+      })
+    }, { type: 'apple', value: true })
+  })
+})

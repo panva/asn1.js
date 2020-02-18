@@ -1,56 +1,51 @@
-'use strict';
 /* global describe it */
 
-const assert = require('assert');
-const asn1 = require('..');
-const BN = require('bn.js');
+const { strict: assert } = require('assert')
+const asn1 = require('..')
 
-const Buffer = require('safer-buffer').Buffer;
-
-describe('asn1.js PEM encoder/decoder', function() {
-  const model = asn1.define('Model', function() {
+describe('asn1.js PEM encoder/decoder', function () {
+  const model = asn1.define('Model', function () {
     this.seq().obj(
       this.key('a').int(),
       this.key('b').bitstr(),
       this.key('c').int()
-    );
-  });
+    )
+  })
 
-  const hundred = Buffer.alloc(100, 'A');
+  const hundred = Buffer.alloc(100, 'A')
 
-  it('should encode PEM', function() {
-
+  it('should encode PEM', function () {
     const out = model.encode({
-      a: new BN(123),
+      a: 123n,
       b: {
         data: hundred,
         unused: 0
       },
-      c: new BN(456)
+      c: 456n
     }, 'pem', {
       label: 'MODEL'
-    });
+    })
 
     const expected =
         '-----BEGIN MODEL-----\n' +
         'MG4CAXsDZQBBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB\n' +
         'QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB\n' +
         'QUFBQUFBQUFBQUFBAgIByA==\n' +
-        '-----END MODEL-----';
-    assert.equal(out, expected);
-  });
+        '-----END MODEL-----'
+    assert.equal(out, expected)
+  })
 
-  it('should decode PEM', function() {
+  it('should decode PEM', function () {
     const expected =
         '-----BEGIN MODEL-----\n' +
         'MG4CAXsDZQBBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB\n' +
         'QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB\n' +
         'QUFBQUFBQUFBQUFBAgIByA==\n' +
-        '-----END MODEL-----';
+        '-----END MODEL-----'
 
-    const out = model.decode(expected, 'pem', { label: 'MODEL' });
-    assert.equal(out.a.toString(), '123');
-    assert.equal(out.b.data.toString(), hundred.toString());
-    assert.equal(out.c.toString(), '456');
-  });
-});
+    const out = model.decode(expected, 'pem', { label: 'MODEL' })
+    assert.equal(out.a.toString(), '123')
+    assert.equal(out.b.data.toString(), hundred.toString())
+    assert.equal(out.c.toString(), '456')
+  })
+})

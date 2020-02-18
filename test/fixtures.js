@@ -1,10 +1,9 @@
-'use strict';
-/* global describe it */
+const { strict: assert } = require('assert')
 
-const assert = require('assert');
-
-function jsonEqual(a, b) {
-  assert.deepEqual(JSON.parse(JSON.stringify(a)),
-                   JSON.parse(JSON.stringify(b)));
+function jsonEqual (a, b) {
+  assert.deepEqual( // eslint-disable-line node/no-deprecated-api
+    a,
+    b
+  )
 }
-exports.jsonEqual = jsonEqual;
+exports.jsonEqual = jsonEqual
