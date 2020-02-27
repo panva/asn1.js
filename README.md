@@ -4,7 +4,7 @@ ASN.1 DER Encoder/Decoder and DSL for Node.js with no dependencies
 
 ## Acknowledgement
 
-This is a fork of [@indutny's](https://github.com/indutny) `asn.js` library with the following
+This is a fork of [@indutny's](https://github.com/indutny) `asn1.js` library with the following
 changes made:
 
 - all `.int()` returns are native `BigInt` values
