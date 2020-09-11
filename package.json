@@ -12,10 +12,20 @@
   "repository": "panva/asn1.js",
   "license": "MIT",
   "author": "Fedor Indutny",
+  "contributors": [
+    "Filip Skokan <panva.ip@gmail.com>"
+  ],
+  "exports": {
+    ".": {
+      "import": "./lib/asn1.mjs",
+      "require": "./lib/asn1.js"
+    },
+    "./": "./"
+  },
+  "main": "lib/asn1.js",
   "files": [
     "lib"
   ],
-  "main": "lib/asn1.js",
   "scripts": {
     "lint": "standard",
     "lint-fix": "standard --fix",
@@ -27,8 +37,5 @@
   },
   "engines": {
     "node": ">=10.13.0"
-  },
-  "contributors": [
-    "Filip Skokan <panva.ip@gmail.com>"
-  ]
+  }
 }
